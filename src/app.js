@@ -1,3 +1,24 @@
+import express from 'express';
+import dotenv from 'dotenv';
+import connectDB from '../DbConnect.js';
+import ClienteRouter from './routes/ClienteRouter.js';
+import PagamentoRouter from './routes/PagamentoRouter.js';
+import DividaRouter from './routes/DividaRouter.js';
+
+dotenv.config();
+
+const app = express();
+
+app.use(express.json());
+app.use('/api', ClienteRouter);
+app.use('/api', PagamentoRouter);
+app.use('/api', DividaRouter);
+
+connectDB();
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 app.get("/clientes", async (req, res) => {
     const listaClientes = await cliente.find({});
     res.status (200).json (clientes);

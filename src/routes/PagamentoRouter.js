@@ -1,9 +1,14 @@
-import express from "express";
-import PagamentoController from "../controllers/PagamentoController.js";
-const routes = express.Router();
-routes.get("/pagamentos", PagamentoController.listarPagamento);
-routes.get("/pagamentos/:id", PagamentoController.listarPagamentoPorId);
-routes.post("/pagamentos", PagamentoController.cadastrarPagamento);
-routes.put("/pagamentos/:id", PagamentoController.atualizarPagamento);
-routes.delete("/pagamentos/:id", PagamentoController.excluirPagamento);
-export default routes;
+import express from 'express';
+import { listarPagamentos } from '../controllers/PagamentoController.js';
+
+const router = express.Router();
+
+router.get('/pagamentos', listarPagamentos);
+
+router.get("/pagamentos", PagamentoController.listarPagamento);
+router.get("/pagamentos/:id", PagamentoController.listarPagamentoPorId);
+router.post("/pagamentos", PagamentoController.cadastrarPagamento);
+router.put("/pagamentos/:id", PagamentoController.atualizarPagamento);
+router.delete("/pagamentos/:id", PagamentoController.excluirPagamento);
+
+export default router;

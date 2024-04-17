@@ -1,46 +1,66 @@
-import cliente from "../models/Cliente.js"; //Importará o modelo do Cliente e a coleção dele lá do mongoDB
-class ClienteController {
+import Cliente from '../models/ClienteModel.js';
 
-    static async listarClientePorId(req,res){
-    try{
-        const id = req.params.id //Pega o ID do link
-        const clienteEncontrado = await cliente.findByID(id); //Usa o método do mongoose para procurar o livro usando o id
-        res.status(200).json(clienteEncontrado) //retorna o cliente encontrado
-    } catch(erro){
-    res.status(500).send({message:`${erro.message} - falha na requisição do cliente`})
-
-//Mensagem de erro caso não encontre o livro
-    }
-    }
-
-    static async cadastrarCliente(req,res){
-        try{
-        const novoCliente = await cliente.create(req.body) //Pegando as informações do body da requisição para gerar um novo livro usando o livro.create
-        res.status(201).json({message:"Cliente criado com sucesso", cliente : novoCliente})
-        }catch(erro){
-        res.status(500).json({message:`${erro.message} - Falha ao cadastrar o Cliente`})
-        }
-    }
-
-    static async atualizarCliente(req,res){
-        try{
-        const id = req.params.id
-        await cliente.findByIdAndUpdate(id,req.body)
-        res.status(200).json({message:"Cliente atualizado"})
-        }catch(erro){
-        res.status(500).json({message: `${erro.message} - Erro ao atualizar o cliente` })
-        }
-    }
-    static async excluirCliente (req, res) {
+const ClienteController = {
+    listarClientes: async (req, res) => {
         try {
-        const id = req.params.id;
-        await cliente.findByIdAndDelete(id);
-        res.status(200).json({ message: "cliente excluído com sucesso" });
-        } catch (erro) {
-        res.status(500).json({ message: `${erro.message} - falha na exclusão` });
+            const clientes = await Cliente.find();
+            res.status(200).json(clientes);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+
+    listarClientePorId: async (req, res) => {
+        try {
+            const id = req.params.id;
+            const clienteEncontrado = await Cliente.findById(id);
+            if (!clienteEncontrado) {
+                return res.status(404).json({ message: "Cliente não encontrado" });
+            }
+            res.status(200).json(clienteEncontrado);
+        } catch (error) {
+            res.status(500).json({ message: `Falha na requisição do cliente: ${error.message}` });
+        }
+    },
+
+    cadastrarCliente: async (req, res) => {
+        try {
+            if (!req.body) {
+                return res.status(400).json({ message: "Corpo da requisição vazio" });
+            }
+
+            const novoCliente = await Cliente.create(req.body);
+            res.status(201).json({ message: "Cliente criado com sucesso", cliente: novoCliente });
+        } catch (error) {
+            res.status(500).json({ message: `Falha ao cadastrar o cliente: ${error.message}` });
+        }
+    },
+
+    atualizarCliente: async (req, res) => {
+        try {
+            const id = req.params.id;
+            const clienteAtualizado = await Cliente.findByIdAndUpdate(id, req.body, { new: true });
+            if (!clienteAtualizado) {
+                return res.status(404).json({ message: "Cliente não encontrado" });
+            }
+            res.status(200).json({ message: "Cliente atualizado", cliente: clienteAtualizado });
+        } catch (error) {
+            res.status(500).json({ message: `Erro ao atualizar o cliente: ${error.message}` });
+        }
+    },
+
+    excluirCliente: async (req, res) => {
+        try {
+            const id = req.params.id;
+            const clienteExcluido = await Cliente.findByIdAndDelete(id);
+            if (!clienteExcluido) {
+                return res.status(404).json({ message: "Cliente não encontrado" });
+            }
+            res.status(200).json({ message: "Cliente excluído com sucesso" });
+        } catch (error) {
+            res.status(500).json({ message: `Falha na exclusão do cliente: ${error.message}` });
         }
     }
 };
-
 
 export default ClienteController;
